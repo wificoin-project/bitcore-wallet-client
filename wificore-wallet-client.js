@@ -10683,7 +10683,7 @@ bitcore.versionGuard = function(version) {
     throw new Error(message);
   }
 };
-bitcore.versionGuard(global._bitcoreCash);
+//bitcore.versionGuard(global._bitcoreCash);
 global._bitcoreCash = bitcore.version;
 
 // crypto
