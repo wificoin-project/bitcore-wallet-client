@@ -9,7 +9,7 @@ clean:
 	rm wificore-wallet-client.min.js
 
 wificore-wallet-client.js: index.js lib/*.js
-	${BIN_PATH}browserify $< > $@
+	browserify $< > $@
 
 wificore-wallet-client.min.js: wificore-wallet-client.js
 	uglify  -s $<  -o $@
