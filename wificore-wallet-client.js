@@ -2979,7 +2979,7 @@ var $ = require('preconditions').singleton();
 var _ = require('lodash');
 
 var Bitcore = require('wificoin-lib');
-var Mnemonic = require('bitcore-mnemonic');
+var Mnemonic = require('wificore-mnemonic');
 var sjcl = require('sjcl');
 
 var Common = require('./common');
@@ -3484,7 +3484,7 @@ Credentials.fromOldCopayWallet = function(w) {
 module.exports = Credentials;
 
 }).call(this,require("buffer").Buffer)
-},{"./common":5,"bitcore-lib":88,"bitcore-mnemonic":137,"buffer":186,"lodash":258,"preconditions":275,"sjcl":318}],8:[function(require,module,exports){
+},{"./common":5,"wificoin-lib":88,"wificore-mnemonic":137,"buffer":186,"lodash":258,"preconditions":275,"sjcl":318}],8:[function(require,module,exports){
 'use strict';
 
 var _ = require('lodash');
@@ -3794,7 +3794,7 @@ var Bitcore_ = {
   bch: require('bitcore-lib-cash'),
 };
 
-var BitcorePayPro = require('bitcore-payment-protocol');
+var BitcorePayPro = require('wificore-payment-protocol');
 var PayPro = {};
 
 PayPro._nodeRequest = function(opts, cb) {
@@ -4052,7 +4052,7 @@ PayPro.send = function(opts, cb) {
 module.exports = PayPro;
 
 }).call(this,require('_process'),require("buffer").Buffer)
-},{"_process":281,"bitcore-lib":88,"bitcore-lib-cash":38,"bitcore-payment-protocol":148,"buffer":186,"http":320,"https":247,"preconditions":275}],13:[function(require,module,exports){
+},{"_process":281,"wificoin-lib":88,"bitcore-lib-cash":38,"wificoin-payment-protocol":148,"buffer":186,"http":320,"https":247,"preconditions":275}],13:[function(require,module,exports){
 var $ = require('preconditions').singleton();
 var _ = require('lodash');
 
@@ -4258,7 +4258,7 @@ Verifier.checkTxProposal = function(credentials, txp, opts) {
 
 module.exports = Verifier;
 
-},{"./common":5,"./log":11,"bitcore-lib":88,"lodash":258,"preconditions":275}],14:[function(require,module,exports){
+},{"./common":5,"./log":11,"wificoin-lib":88,"lodash":258,"preconditions":275}],14:[function(require,module,exports){
 try {
   var asn1 = require('asn1.js');
 } catch (e) {
