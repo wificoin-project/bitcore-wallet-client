@@ -1,0 +1,70 @@
+{
+  "name": "wificore-wallet-client",
+  "description": "Client for wificoin-wallet-service",
+  "author": {
+    "name": "BitPay Inc"
+  },
+  "version": "6.7.5",
+  "license": "MIT",
+  "keywords": [
+    "bitcoin",
+    "copay",
+    "multisig",
+    "wallet",
+    "client",
+    "bitcore",
+    "BWS",
+    "BWC"
+  ],
+  "engine": "node >= 8.0.0",
+  "main": "index.js",
+  "repository": {
+    "url": "git+ssh://git@github.com/wificoin-project/wificore-wallet-client.git",
+    "type": "git"
+  },
+  "bugs": {
+    "url": "https://github.com/wificoin-project/wificore-wallet-client/issues"
+  },
+  "dependencies": {
+    "async": "^0.9.0",
+    "bip38": "^1.3.0",
+    "wificoin-lib": "git+https://github.com/wificoin-project/wificoin-lib.git",
+    "bitcore-lib-cash": "^0.16.1",
+    "bitcore-mnemonic": "^1.3.0",
+    "bitcore-payment-protocol": "^1.7.0",
+    "json-stable-stringify": "^1.0.0",
+    "lodash": "^4.17.4",
+    "preconditions": "^1.0.8",
+    "sjcl": "1.0.3",
+    "superagent": "^3.4.1"
+  },
+  "devDependencies": {
+    "bitcore-wallet-service": "2.3.0",
+    "browserify": "^13.1.0",
+    "chai": "^1.9.1",
+    "coveralls": "^2.11.2",
+    "istanbul": "*",
+    "mocha": "^1.18.2",
+    "sinon": "^1.10.3",
+    "supertest": "^3.0.0",
+    "tingodb": "^0.3.4",
+    "uglify": "^0.1.1",
+    "uuid": "^2.0.1",
+    "grunt-jsdox": "github:matiu/grunt-jsdox#update/jsdoc-4.10"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "coverage": "istanbul cover ./node_modules/.bin/_mocha -- --reporter spec test",
+    "test": "mocha",
+    "coveralls": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- -R spec && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage",
+    "docs": "jsdox lib/* lib/common lib/errors -o docs && cat README.header.md  docs/*.md LICENSE > README.md"
+  },
+  "gitHead": "5394630cdda319d143b54a1906dc5b02740624aa",
+  "readme": "# bitcore-wallet-client\n\n[![NPM Package](https://img.shields.io/npm/v/bitcore-wallet-client.svg?style=flat-square)](https://www.npmjs.org/package/bitcore-wallet-client)\n[![Build Status](https://img.shields.io/travis/bitpay/bitcore-wallet-client.svg?branch=master&style=flat-square)](https://travis-ci.org/bitpay/bitcore-wallet-client) \n[![Coverage Status](https://coveralls.io/repos/bitpay/bitcore-wallet-client/badge.svg)](https://coveralls.io/r/bitpay/bitcore-wallet-client)\n\nThe *official* client library for [bitcore-wallet-service] (https://github.com/bitpay/bitcore-wallet-service). \n\n## Description\n\nThis package communicates with BWS [Bitcore wallet service](https://github.com/bitpay/bitcore-wallet-service) using the REST API. All REST endpoints are wrapped as simple async methods. All relevant responses from BWS are checked independently by the peers, thus the importance of using this library when talking to a third party BWS instance.\n\nSee [Bitcore-wallet] (https://github.com/bitpay/bitcore-wallet) for a simple CLI wallet implementation that relays on BWS and uses bitcore-wallet-client.\n\n## Get Started\n\nYou can start using bitcore-wallet-client in any of these two ways:\n\n* via [Bower](http://bower.io/): by running `bower install bitcore-wallet-client` from your console\n* or via [NPM](https://www.npmjs.com/package/bitcore-wallet-client): by running `npm install bitcore-wallet-client` from your console.\n\n## Example\n\nStart your own local [Bitcore wallet service](https://github.com/bitpay/bitcore-wallet-service) instance. In this example we assume you have `bitcore-wallet-service` running on your `localhost:3232`.\n\nThen create two files `irene.js` and `tomas.js` with the content below:\n\n**irene.js**\n\n``` javascript\nvar Client = require('bitcore-wallet-client');\n\n\nvar fs = require('fs');\nvar BWS_INSTANCE_URL = 'https://bws.bitpay.com/bws/api'\n\nvar client = new Client({\n  baseUrl: BWS_INSTANCE_URL,\n  verbose: false,\n});\n\nclient.createWallet(\"My Wallet\", \"Irene\", 2, 2, {network: 'testnet'}, function(err, secret) {\n  if (err) {\n    console.log('error: ',err); \n    return\n  };\n  // Handle err\n  console.log('Wallet Created. Share this secret with your copayers: ' + secret);\n  fs.writeFileSync('irene.dat', client.export());\n});\n```\n\n**tomas.js**\n\n``` javascript\n\nvar Client = require('bitcore-wallet-client');\n\n\nvar fs = require('fs');\nvar BWS_INSTANCE_URL = 'https://bws.bitpay.com/bws/api'\n\nvar secret = process.argv[2];\nif (!secret) {\n  console.log('./tomas.js <Secret>')\n\n  process.exit(0);\n}\n\nvar client = new Client({\n  baseUrl: BWS_INSTANCE_URL,\n  verbose: false,\n});\n\nclient.joinWallet(secret, \"Tomas\", {}, function(err, wallet) {\n  if (err) {\n    console.log('error: ', err);\n    return\n  };\n\n  console.log('Joined ' + wallet.name + '!');\n  fs.writeFileSync('tomas.dat', client.export());\n\n\n  client.openWallet(function(err, ret) {\n    if (err) {\n      console.log('error: ', err);\n      return\n    };\n    console.log('\\n\\n** Wallet Info', ret); //TODO\n\n    console.log('\\n\\nCreating first address:', ret); //TODO\n    if (ret.wallet.status == 'complete') {\n      client.createAddress({}, function(err,addr){\n        if (err) {\n          console.log('error: ', err);\n          return;\n        };\n\n        console.log('\\nReturn:', addr)\n      });\n    }\n  });\n});\n```\n\nInstall `bitcore-wallet-client` before start:\n\n```\nnpm i bitcore-wallet-client\n```\n\nCreate a new wallet with the first script:\n\n```\n$ node irene.js\ninfo Generating new keys \n Wallet Created. Share this secret with your copayers: JbTDjtUkvWS4c3mgAtJf4zKyRGzdQzZacfx2S7gRqPLcbeAWaSDEnazFJF6mKbzBvY1ZRwZCbvT\n```\n\nJoin to this wallet with generated secret:\n\n```\n$ node tomas.js JbTDjtUkvWS4c3mgAtJf4zKyRGzdQzZacfx2S7gRqPLcbeAWaSDEnazFJF6mKbzBvY1ZRwZCbvT\nJoined My Wallet!\n\nWallet Info: [...]\n\nCreating first address:\n\nReturn: [...]\n\n```\n\nNote that the scripts created two files named `irene.dat` and `tomas.dat`. With these files you can get status, generate addresses, create proposals, sign transactions, etc.\n\n\n",
+  "readmeFilename": "README.header.md",
+  "homepage": "https://github.com/wificoin-project/wificore-wallet-client#readme",
+  "_id": "wificore-wallet-client@6.7.5",
+  "_shasum": "4bd9d635e2249f51434a99c4e08c162211950093",
+  "_from": "git+https://github.com/wificoin-project/wificore-wallet-client.git",
+  "_resolved": "git+https://github.com/wificoin-project/wificore-wallet-client.git#5394630cdda319d143b54a1906dc5b02740624aa"
+}
