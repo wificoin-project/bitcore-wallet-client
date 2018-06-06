@@ -32,7 +32,7 @@ var Client = require('bitcore-wallet-client');
 
 
 var fs = require('fs');
-var BWS_INSTANCE_URL = 'http://114.112.99.254:3232/bws/api'
+var BWS_INSTANCE_URL = 'https://wfc.wificoin.club:3232/bws/api'
 
 var client = new Client({
   baseUrl: BWS_INSTANCE_URL,
